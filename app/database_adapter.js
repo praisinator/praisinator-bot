@@ -65,7 +65,7 @@ function disableBot(slack_team) {
         var bot = (!!result.error ? null : result.result.rows[0]);
         if(!!bot) {
             var queryString = `UPDATE bots SET active=false WHERE id=${bot.id}`;
-            query(queryString)
+            return query(queryString)
         } else {
             return new Promise(function (resolve, reject) {
                 resolve();
