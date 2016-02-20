@@ -62,12 +62,10 @@ function allBots() {
 
 function disableBot(slack_team) {
     findBot(slack_team).then(function(result) {
-        var bot = (!!result.error ? null : result[0]);
+        var bot = (!!result.error ? null : result.result.rows[0]);
         if(!!bot) {
-            destroyUsersByBot(bot.id).then(function(result) {
-                var queryString = `DELETE FROM bots WHERE id='${bot.id}'`;
-                return query(queryString);
-            })
+            var queryString = `UPDATE bots SET active=false WHERE id=${bot.id}`;
+            query(queryString)
         } else {
             return new Promise(function (resolve, reject) {
                 resolve();
