@@ -20,9 +20,17 @@ var spawnBot = function(bot_token, slack_team) {
             controller.on('ambient', function(bot, message) {
                 var slack_key   = message.user;
                 var bot_user_id = bot.identity.id;
-                var message     = message.text;
+                var content     = message.text;
 
                 console.log('Chat message heard!')
+
+                controller.storage.users.get(slack_key, bot_user_id).then(function(user) {
+                    if(!!user) {
+                        controller.storage.messages.save(user.id, content).then(function(result) {
+                            console.log('Chat message saved!')
+                        })
+                    }
+                })
             })
         }
     })

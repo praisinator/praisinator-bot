@@ -32,6 +32,7 @@ app.get('/oauth', function(req, res) {
         fetch(`https://slack.com/api/auth.test?token=${slack_token}`).then(function(response) {
             return response.json();
         }).then(function(json){
+            var user_name = json.user;
             var slack_key = json.user_id;
             if(!!slack_key) {
                 db.findBot(slack_team).then(function(result) {
@@ -42,7 +43,7 @@ app.get('/oauth', function(req, res) {
                                 res.send('<p>Oops! Something when wrong setting up your bot.</p>');
                             } else {
                                 var bot_id = result.result.rows[0].id;
-                                db.createUser(slack_token, slack_key, bot_id).then(function(result) {
+                                db.createUser(user_name, slack_token, slack_key, bot_id).then(function(result) {
                                     if(!result.error) {
                                         botkit.spawnBot(bot_token, slack_team);
                                         res.send('<p>Enjoy your new Praisinator integration!</p>');
@@ -56,7 +57,7 @@ app.get('/oauth', function(req, res) {
                         db.findUserByToken(slack_token, bot_user_id).then(function(result) {
                             var existing_user = (!!result.error ? null : result.result.rows[0]);
                             if(!existing_user) {
-                                db.createUser(slack_token, slack_key, existing_bot.id).then(function(result) {
+                                db.createUser(user_name, slack_token, slack_key, existing_bot.id).then(function(result) {
                                     res.send('<p>Enjoy your new Praisinator integration!</p>');
                                 })
                             } else {
