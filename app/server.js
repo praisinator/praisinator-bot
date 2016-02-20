@@ -45,7 +45,7 @@ app.get('/oauth', function(req, res) {
                                 db.createUser(slack_token, slack_key, bot_id).then(function(result) {
                                     if(!result.error) {
                                         botkit.spawnBot(bot_token, slack_team);
-                                        res.send('<p>Enjoy your new Slackosphere integration!</p>');
+                                        res.send('<p>Enjoy your new Praisinator integration!</p>');
                                     } else {
                                         res.send('<p>Oops! Something when wrong setting up your integration.</p>');
                                     }
@@ -57,10 +57,10 @@ app.get('/oauth', function(req, res) {
                             var existing_user = (!!result.error ? null : result.result.rows[0]);
                             if(!existing_user) {
                                 db.createUser(slack_token, slack_key, existing_bot.id).then(function(result) {
-                                    res.send('<p>Enjoy your new Slackosphere integration!</p>');
+                                    res.send('<p>Enjoy your new Praisinator integration!</p>');
                                 })
                             } else {
-                                res.send('<p>Slackosphere is already configured</p>');
+                                res.send('<p>Praisinator is already configured</p>');
                             }
                         })
                     }

@@ -1,5 +1,5 @@
 {
-  "name": "Slackosphere",
+  "name": "praisinator-bot",
   "version": "0.0.1",
   "description": "Sentiment Analysis Slackbot",
   "main": "app/server.js",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Diasporism/koding-bot"
+    "url": "git+https://github.com/with-our-powers-combined/praisinator-bot"
   },
   "homepage": "",
   "keywords": [
