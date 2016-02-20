@@ -1,24 +1,20 @@
 {
-  "name": "happybot",
+  "name": "Slackosphere",
   "version": "0.0.1",
   "description": "Sentiment Analysis Slackbot",
   "main": "app/server.js",
   "dependencies": {
     "body-parser": "^1.14.2",
+    "botkit": "0.0.7",
     "dotenv": "^2.0.0",
-    "es6-promise": "^3.0.2",
     "express": "^4.13.3",
-    "isomorphic-fetch": "^2.2.1",
     "jade": "^1.11.0",
-    "jfs": "^0.2.6",
     "mustache": "^2.2.1",
+    "node-fetch": "^1.3.3",
     "pg": "^4.4.4",
-    "request": "^2.67.0",
-    "rocky": "^0.4.10",
-    "ws": "^1.0.0"
+    "promise": "^7.1.1"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "start": "node app/server.js"
   },
