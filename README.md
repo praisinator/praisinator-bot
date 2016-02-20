@@ -2,7 +2,7 @@ Praisinator Bot
 =========
 Praisinator Bot is a Slackbot integration that listens in to your team's public conversations and runs sentiment analysis in real time to report the mood and morale of your team.
 
-It integrates with Praisinator Web in order to deliver informative analytics and reporting. This allows you to see who's having the most positive and negative effect on your team and take actionable steps to correct or praise them.
+It integrates with [Praisinator Web](https://github.com/with-our-powers-combined/praisinator-web) in order to deliver informative analytics and reporting. This allows you to see who's having the most positive and negative effect on your team and take actionable steps to correct or praise them.
 
 Pre-requisites
 ---------------
