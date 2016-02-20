@@ -38,5 +38,14 @@ module.exports = {
             console.log('WARNING: method not implemented!');
             return null;
         }
+    },
+    messages: {
+        get: function() {
+            console.log('WARNING: method not implemented!');
+            return null;
+        },
+        save: function(user_id, content) {
+            return db.createMessage(user_id, content);
+        }
     }
 };

@@ -94,6 +94,11 @@ function createUser(user_name, slack_token, slack_key, bot_id) {
     return query(queryString);
 }
 
+function createMessage(user_id, content) {
+    var queryString = `INSERT INTO messages(content, user_id) VALUES('${content}', '${user_id}')`;
+    return query(queryString);
+}
+
 createDatabase();
 
 module.exports = {
@@ -103,5 +108,6 @@ module.exports = {
     disableBot: disableBot,
     findUserByToken: findUserByToken,
     findUserByKey: findUserByKey,
-    createUser: createUser
+    createUser: createUser,
+    createMessage: createMessage
 }

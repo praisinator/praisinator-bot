@@ -23,6 +23,14 @@ var spawnBot = function(bot_token, slack_team) {
                 var content     = message.text;
 
                 console.log('Chat message heard!')
+
+                controller.storage.users.get(slack_key, bot_user_id).then(function(user) {
+                    if(!!user) {
+                        controller.storage.messages.save(user.id, content).then(function(result) {
+                            console.log('Chat message saved!')
+                        })
+                    }
+                })
             })
         }
     })
