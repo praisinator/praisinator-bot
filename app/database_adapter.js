@@ -7,14 +7,14 @@ function createDatabase() {
         if(error) {
             console.log(`Error while connecting to the database: ${error}`);
         } else {
-            client.query('CREATE TABLE IF NOT EXISTS bots (id SERIAL PRIMARY KEY, slack_team text UNIQUE, bot_token text UNIQUE, bot_user_id text, active boolean DEFAULT true, created_at TIMESTAMP NOT NULL DEFAULT now())', function(error, result) {
+            client.query('CREATE TABLE IF NOT EXISTS bots (id SERIAL PRIMARY KEY, slack_team varchar(255) UNIQUE, bot_token varchar(255) UNIQUE, bot_user_id varchar(255), active boolean DEFAULT true, created_at TIMESTAMP NOT NULL DEFAULT now())', function(error, result) {
                 if(error) {
                     console.log(`Error while creating the bots table: ${error}`);
                 } else {
                     console.log('Successfully ensured the bots table exists');
                 }
             });
-            client.query('CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, slack_token text, slack_key text, bot_id integer REFERENCES bots (id), created_at TIMESTAMP NOT NULL DEFAULT now())', function(error, result) {
+            client.query('CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, user_name varchar(255), slack_token varchar(255), slack_key varchar(255), bot_id integer REFERENCES bots (id), created_at TIMESTAMP NOT NULL DEFAULT now())', function(error, result) {
                 if(error) {
                     console.log(`Error while creating the users table: ${error}`);
                 } else {
@@ -89,8 +89,8 @@ function findUserByKey(slack_key, bot_user_id) {
     return query(queryString);
 }
 
-function createUser(slack_token, slack_key, bot_id) {
-    var queryString = `INSERT INTO users(slack_token, slack_key, bot_id) VALUES('${slack_token}', '${slack_key}', '${bot_id}')`;
+function createUser(user_name, slack_token, slack_key, bot_id) {
+    var queryString = `INSERT INTO users(user_name, slack_token, slack_key, bot_id) VALUES('${user_name}', '${slack_token}', '${slack_key}', '${bot_id}')`;
     return query(queryString);
 }
 

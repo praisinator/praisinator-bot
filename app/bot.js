@@ -20,7 +20,7 @@ var spawnBot = function(bot_token, slack_team) {
             controller.on('ambient', function(bot, message) {
                 var slack_key   = message.user;
                 var bot_user_id = bot.identity.id;
-                var message     = message.text;
+                var content     = message.text;
 
                 console.log('Chat message heard!')
             })
