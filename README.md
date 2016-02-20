@@ -18,6 +18,20 @@ $ cd praisinator-bot/
 $ npm install
 ```
 
+Create a .env file:
+```sh
+$ touch .env
+```
+
+Add the following key/values to said .env:
+
+```
+SLACK_CLIENT_ID=9094370912.22344990885
+SLACK_CLIENT_SECRET=[SLACK_CLIENT_SECRET_HERE]
+SLACKOSPHERE_URI=[DNS_FORWARDED_URI_HERE]
+DATABASE_URL=[DATABASE_URL_HERE]
+```
+
 Run the Server
 ---------------
 Just type:
