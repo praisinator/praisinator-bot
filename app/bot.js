@@ -8,9 +8,9 @@ var spawnBot = function(slack_team_id) {
     });
 
     controller.storage.teams.get(slack_team_id).then(function(team) {
-        if(!!team && team.active === true) {
+        if(team.attribute('active') === true) {
             var bot = controller.spawn({
-                token: team.slack_bot_token
+                token: team.attribute('slack_bot_token')
             }).startRTM(function(error) {
                 if(error === 'account_inactive') {
                     controller.storage.teams.destroy(slack_team_id)
@@ -19,18 +19,17 @@ var spawnBot = function(slack_team_id) {
 
             controller.on('ambient', function(bot, message) {
                 var slack_user_id    = message.user;
-                var slack_team_id    = bot.identity.id;
-                var slack_channel_id = '';
+                var slack_team_id    = message.team;
+                var slack_channel_id = message.channel;
+                var timestamp        = message.ts;
                 var content          = message.text;
 
-                debugger;
+                console.log('Chat message heard!');
 
-                console.log('Chat message heard!')
-
-                storage.messages.save(content, slack_user_id, slack_channel_id, slack_team_id).then(function(message) {
-                    console.log('Chat message logged')
+                storage.messages.save(content, slack_user_id, slack_channel_id, slack_team_id, timestamp).then(function(message) {
+                    console.log('Chat message saved!');
                 }).catch(function(error) {
-                    console.log(`Error logging message: ${error}`);
+                    console.log(`Error creating message/channel: ${error}`);
                 })
             })
         }

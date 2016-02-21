@@ -2,15 +2,9 @@
 var JSONAPIonify = require('JSONAPIonify-client');
 var errors       = require('JSONAPIonify-client/errors');
 var _            = require('underscore');
-var api = new JSONAPIonify(process.env.PRAISINATOR_API, { headers: {} });
+var api          = new JSONAPIonify(process.env.PRAISINATOR_API, { headers: {} });
 
 var teams = {
-    //t.string   "slack_id"
-    //t.string   "name"
-    //t.string   "slack_bot_id"
-    //t.string   "logo_url"
-    //t.string   "slack_bot_token"
-    //t.bool     "active"
     all: function() {
         return api.resource('teams').list().catch(function(error) {
             console.log(`Error fetching teams: ${error}`);
@@ -56,9 +50,6 @@ var teams = {
 };
 
 var users = {
-    //t.integer  "team_id",      null: false
-    //t.string   "slack_id"
-    //t.string   "access_token"
     get: function(slack_user_id, slack_team_id) {
         return api.resource('teams').read(slack_team_id).then(function(team) {
             return team.related('users').then(function(users) {
@@ -107,16 +98,12 @@ var users = {
 };
 
 var messages = {
-    //t.integer  "channel_id", null: false
-    //t.integer  "user_id",    null: false
-    //t.string   "slack_id"
-    //t.text     "content"
     get: function() {
         console.log('WARNING: method not implemented!');
         return null;
     },
-    save: function(content, slack_user_id, slack_channel_id, slack_team_id) {
-        api.resource('teams').read(slack_team_id).then(function(team) {
+    save: function(content, slack_user_id, slack_channel_id, slack_team_id, timestamp) {
+        return api.resource('teams').read(slack_team_id).then(function(team) {
             return team.related('channels').then(function(channels) {
                 var existingChannel = _.find(channels, function(channel) {
                     return channel.id() === slack_channel_id;
@@ -124,12 +111,12 @@ var messages = {
                 if(existingChannel) {
                     return existingChannel;
                 } else {
-                    return channels.createWithId(slack_channel_id);
+                    return channels.createWithId(slack_channel_id, {}, {});
                 }
             }).then(function(channel) {
                 return channel.related('messages');
             }).then(function(messages) {
-                return messages.create({ content: content })
+                return messages.create({ content: content, timestamp: timestamp, user_slack_id: slack_user_id })
             })
         })
     },
@@ -144,8 +131,6 @@ var messages = {
 };
 
 var channels = {
-    //t.integer  "team_id",    null: false
-    //t.string   "slack_id"
     get: function() {
         console.log('WARNING: method not implemented!');
         return null;

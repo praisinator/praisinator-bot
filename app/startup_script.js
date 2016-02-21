@@ -5,7 +5,7 @@ var storage = require('./storage');
 function startBots() {
     storage.teams.all().then(function(teams) {
         teams.forEach(function(team){
-            botkit.spawnBot(team.slack_id());
+            botkit.spawnBot(team.id());
         })
     })
 }
