@@ -1,35 +1,35 @@
-var Botkit      = require('botkit');
-var bot_storage = require('./bot_storage');
+var Botkit  = require('botkit');
+var storage = require('./storage');
 
-var spawnBot = function(bot_token, slack_team) {
+var spawnBot = function(slack_team_id) {
     var controller = Botkit.slackbot({
         debug: false, // Enable to see botkit logs in realtime as events take place
-        storage: bot_storage
+        storage: storage
     });
 
-    controller.storage.teams.get(slack_team).then(function(existing_bot) {
-        if(!!existing_bot && existing_bot.active === true) {
+    controller.storage.teams.get(slack_team_id).then(function(team) {
+        if(team.attribute('active') === true) {
             var bot = controller.spawn({
-                token: bot_token
+                token: team.attribute('slack_bot_token')
             }).startRTM(function(error) {
                 if(error === 'account_inactive') {
-                    controller.storage.teams.destroy(slack_team)
+                    controller.storage.teams.destroy(slack_team_id)
                 }
             })
 
             controller.on('ambient', function(bot, message) {
-                var slack_key   = message.user;
-                var bot_user_id = bot.identity.id;
-                var content     = message.text;
+                var slack_user_id    = message.user;
+                var slack_team_id    = message.team;
+                var slack_channel_id = message.channel;
+                var timestamp        = message.ts;
+                var content          = message.text;
 
-                console.log('Chat message heard!')
+                console.log('Chat message heard!');
 
-                controller.storage.users.get(slack_key, bot_user_id).then(function(user) {
-                    if(!!user) {
-                        controller.storage.messages.save(user.id, content).then(function(result) {
-                            console.log('Chat message saved!')
-                        })
-                    }
+                storage.messages.save(content, slack_user_id, slack_channel_id, slack_team_id, timestamp).then(function(message) {
+                    console.log('Chat message saved!');
+                }).catch(function(error) {
+                    console.log(`Error creating message/channel: ${error}`);
                 })
             })
         }

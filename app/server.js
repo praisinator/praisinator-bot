@@ -2,10 +2,10 @@
 require('dotenv').config();
 
 var express        = require('express');
-var botkit         = require('./bot');
-var db             = require('./database_adapter');
 var fetch          = require('node-fetch');
+var botkit         = require('./bot');
 var startup_script = require('./startup_script');
+var storage        = require('./storage');
 var app            = express();
 
 startup_script.startBots();
@@ -25,50 +25,45 @@ app.get('/oauth', function(req, res) {
     fetch(url).then(function(response) {
         return response.json();
     }).then(function(json) {
-        var slack_team  = json.team_id;
-        var slack_token = json.access_token;
-        var bot_token   = json.bot.bot_access_token;
-        var bot_user_id = json.bot.bot_user_id;
-        fetch(`https://slack.com/api/auth.test?token=${slack_token}`).then(function(response) {
+        var slack_team_id    = json.team_id;
+        var slack_user_token = json.access_token;
+        var slack_bot_token  = json.bot.bot_access_token;
+        var slack_bot_id     = json.bot.bot_user_id;
+        fetch(`https://slack.com/api/team.info?token=${slack_user_token}`).then(function(response) {
             return response.json();
-        }).then(function(json){
-            var user_name = json.user;
-            var slack_key = json.user_id;
-            if(!!slack_key) {
-                db.findBot(slack_team).then(function(result) {
-                    var existing_bot = (!!result.error ? null : result.result.rows[0]);
-                    if(!existing_bot) {
-                        db.createBot(slack_team, bot_token, bot_user_id).then(function(result) {
-                            if(result.error) {
-                                res.send('<p>Oops! Something when wrong setting up your bot.</p>');
-                            } else {
-                                var bot_id = result.result.rows[0].id;
-                                db.createUser(user_name, slack_token, slack_key, bot_id).then(function(result) {
-                                    if(!result.error) {
-                                        botkit.spawnBot(bot_token, slack_team);
+        }).then(function(json) {
+            return json.team.icon.image_132;
+        }).then(function(slack_team_logo_url) {
+            fetch(`https://slack.com/api/auth.test?token=${slack_user_token}`).then(function(response) {
+                return response.json();
+            }).then(function(json){
+                var slack_user_id   = json.user_id;
+                var slack_team_name = json.team;
+                if(!!slack_user_id) {
+                    storage.teams.get(slack_team_id).then(function(team) {
+                        if(!team) {
+                            storage.teams.save(slack_team_id, slack_team_name, slack_team_logo_url, slack_bot_id, slack_bot_token).then(function(team) {
+                                return storage.users.save(slack_user_id, slack_user_token, team.id());
+                            }).then(function(user) {
+                                botkit.spawnBot(slack_team_id);
+                                res.send('<p>Enjoy your new Praisinator integration!</p>');
+                            })
+                        } else {
+                            storage.users.get(slack_user_id, team.id()).then(function(user) {
+                                if(!user) {
+                                    storage.users.save(slack_user_id, slack_user_token, team.id()).then(function(user) {
                                         res.send('<p>Enjoy your new Praisinator integration!</p>');
-                                    } else {
-                                        res.send('<p>Oops! Something when wrong setting up your integration.</p>');
-                                    }
-                                })
-                            }
-                        })
-                    } else {
-                        db.findUserByToken(slack_token, bot_user_id).then(function(result) {
-                            var existing_user = (!!result.error ? null : result.result.rows[0]);
-                            if(!existing_user) {
-                                db.createUser(user_name, slack_token, slack_key, existing_bot.id).then(function(result) {
-                                    res.send('<p>Enjoy your new Praisinator integration!</p>');
-                                })
-                            } else {
-                                res.send('<p>Praisinator is already configured</p>');
-                            }
-                        })
-                    }
-                })
-            } else {
-                res.send(`<p>Oops! Something when wrong setting up your integration, try again:</p><p>${error}</p>`);
-            }
+                                    })
+                                } else {
+                                    res.send('<p>Praisinator is already configured</p>');
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    res.send(`<p>Oops! Something when wrong setting up your integration, try again:</p><p>${error}</p>`);
+                }
+            })
         })
     })
 })

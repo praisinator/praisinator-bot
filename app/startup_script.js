@@ -1,19 +1,12 @@
 'user strict';
-var db     = require('./database_adapter');
-var botkit = require('./bot');
+var botkit  = require('./bot');
+var storage = require('./storage');
 
 function startBots() {
-    db.allBots().then(function(result) {
-        if(!!result.error) {
-            console.log(`Error while starting up bots: ${result.error}`);
-        } else {
-            var bots = result.result.rows;
-            if (!!bots) {
-                bots.forEach(function(bot){
-                    botkit.spawnBot(bot.bot_token, bot.slack_team);
-                })
-            }
-        }
+    storage.teams.all().then(function(teams) {
+        teams.forEach(function(team){
+            botkit.spawnBot(team.id());
+        })
     })
 }
 

@@ -4,6 +4,7 @@
   "description": "Sentiment Analysis Slackbot",
   "main": "app/server.js",
   "dependencies": {
+    "JSONAPIonify-client": "git+https://github.com/brandfolder/jsonapionify-client.git#4c205e73945b2d0187e95f2d7ba476687918a021",
     "body-parser": "^1.14.2",
     "botkit": "0.0.7",
     "dotenv": "^2.0.0",
@@ -12,7 +13,8 @@
     "mustache": "^2.2.1",
     "node-fetch": "^1.3.3",
     "pg": "^4.4.4",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {},
   "scripts": {
@@ -20,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/with-our-powers-combined/praisinator-bot"
+    "url": "git+https://github.com/praisinator/praisinator-bot"
   },
   "homepage": "",
   "keywords": [
