@@ -18,18 +18,20 @@ var spawnBot = function(slack_team_id) {
             })
 
             controller.on('ambient', function(bot, message) {
-                var slack_key = message.user;
-                var team_id   = bot.identity.id;
-                var content   = message.text;
+                var slack_user_id    = message.user;
+                var slack_team_id    = bot.identity.id;
+                var slack_channel_id = '';
+                var content          = message.text;
+
+                debugger;
 
                 console.log('Chat message heard!')
-                //controller.storage.users.get(slack_key, team_id).then(function(user) {
-                //    if(!!user) {
-                //        controller.storage.messages.save(content, user_id, channel_id, slack_id).then(function(message) {
-                //            console.log('Chat message saved!')
-                //        })
-                //    }
-                //})
+
+                storage.messages.save(content, slack_user_id, slack_channel_id, slack_team_id).then(function(message) {
+                    console.log('Chat message logged')
+                }).catch(function(error) {
+                    console.log(`Error logging message: ${error}`);
+                })
             })
         }
     })

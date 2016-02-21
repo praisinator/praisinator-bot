@@ -43,14 +43,12 @@ app.get('/oauth', function(req, res) {
                     storage.teams.get(slack_team_id).then(function(team) {
                         if(!team) {
                             storage.teams.save(slack_team_id, slack_team_name, slack_team_logo_url, slack_bot_id, slack_bot_token).then(function(team) {
-                                debugger;
                                 return storage.users.save(slack_user_id, slack_user_token, team.id());
                             }).then(function(user) {
                                 botkit.spawnBot(slack_team_id);
                                 res.send('<p>Enjoy your new Praisinator integration!</p>');
                             })
                         } else {
-                            debugger;
                             storage.users.get(slack_user_id, team.id()).then(function(user) {
                                 if(!user) {
                                     storage.users.save(slack_user_id, slack_user_token, team.id()).then(function(user) {

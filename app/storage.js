@@ -1,6 +1,7 @@
 'use strict';
 var JSONAPIonify = require('JSONAPIonify-client');
 var errors       = require('JSONAPIonify-client/errors');
+var _            = require('underscore');
 var api = new JSONAPIonify(process.env.PRAISINATOR_API, { headers: {} });
 
 var teams = {
@@ -31,7 +32,7 @@ var teams = {
             active: true
         };
 
-        return api.resource('teams').createWithId(slack_team_id, attributes, {}).catch(function(error){
+        return api.resource('teams').createWithId(slack_team_id, attributes, {}).catch(function(error) {
             console.log(`Error creating team: ${error}`);
             return false;
         });
@@ -39,12 +40,15 @@ var teams = {
     update: function(slack_team_id, attributes) {
         return this.get(slack_team_id).then(function(team) {
             if(!!team) {
-                return team.update(attributes).catch(function(error){
+                return team.update(attributes).catch(function(error) {
                     console.log(`Error updating team: ${error}`);
                     return false;
                 });
             }
-        })
+        }).catch(function(error) {
+            console.log(`Error updating team: ${error}`);
+            return false;
+        });
     },
     destroy: function(slack_team_id) {
         return this.update(slack_team_id, { active: false });
@@ -56,21 +60,41 @@ var users = {
     //t.string   "slack_id"
     //t.string   "access_token"
     get: function(slack_user_id, slack_team_id) {
-        return api.resource('users').read(slack_team).catch(function(error) {
+        return api.resource('teams').read(slack_team_id).then(function(team) {
+            return team.related('users').then(function(users) {
+                var existingUser = _.find(users, function(user) {
+                    return user.id() === slack_user_id;
+                });
+                if(existingUser) {
+                    return existingUser;
+                } else {
+                    return null;
+                }
+            })
+        }).catch(function(error) {
             console.log(`Error fetching user: ${error}`);
             return null;
-        })
+        });
     },
     save: function(slack_user_id, slack_user_token, slack_team_id) {
-        var attributes = {
-            access_token: slack_user_token,
-            team_id: slack_team_id
-        };
-
-        return api.resource('users').createWithId(slack_user_id, attributes, {}).catch(function(error) {
+        var attributes = { access_token: slack_user_token };
+        return api.resource('teams').read(slack_team_id).then(function(team) {
+            team.related('users').then(function(users) {
+                var existingUser = _.find(users, function(user) {
+                    return user.id() === slack_user_id;
+                });
+                if(!!existingUser) {
+                    return existingUser;
+                } else {
+                    users.createWithId(slack_user_id, attributes, {}).then(function(user) {
+                        return user;
+                    });
+                }
+            })
+        }).catch(function(error) {
             console.log(`Error creating user: ${error}`);
             return null;
-        })
+        });
     },
     update: function() {
         console.log('WARNING: method not implemented!');
