@@ -4,6 +4,7 @@
   "description": "Sentiment Analysis Slackbot",
   "main": "app/server.js",
   "dependencies": {
+    "JSONAPIonify-client": "git+https://github.com/brandfolder/jsonapionify-client.git#4c205e73945b2d0187e95f2d7ba476687918a021",
     "body-parser": "^1.14.2",
     "botkit": "0.0.7",
     "dotenv": "^2.0.0",
