@@ -46,22 +46,22 @@ app.get('/oauth', function(req, res) {
                                 return storage.users.save(slack_user_id, slack_user_token, team.id());
                             }).then(function(user) {
                                 botkit.spawnBot(slack_team_id);
-                                res.send('<p>Enjoy your new Praisinator integration!</p>');
+                                res.redirect(301, 'http://169.54.146.91:3000/');
                             })
                         } else {
                             storage.users.get(slack_user_id, team.id()).then(function(user) {
                                 if(!user) {
                                     storage.users.save(slack_user_id, slack_user_token, team.id()).then(function(user) {
-                                        res.send('<p>Enjoy your new Praisinator integration!</p>');
+                                        res.redirect(301, 'http://169.54.146.91:3000/');
                                     })
                                 } else {
-                                    res.send('<p>Praisinator is already configured</p>');
+                                    res.redirect(301, 'http://169.54.146.91:3000/');
                                 }
                             })
                         }
                     })
                 } else {
-                    res.send(`<p>Oops! Something when wrong setting up your integration, try again:</p><p>${error}</p>`);
+                    res.redirect(301, 'http://169.54.146.91:3000/');
                 }
             })
         })
